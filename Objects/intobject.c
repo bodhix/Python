@@ -438,6 +438,54 @@ PyInt_FromUnicode(Py_UNICODE *s, Py_ssize_t length, int base)
         return Py_NotImplemented;               \
     }
 
+/* zcb hack intobject */
+#define HACK_NUM 10
+static int values[HACK_NUM];
+static int refcounts[HACK_NUM];
+static int
+int_print_zcb(PyIntObject *v, FILE *fp, int flags)
+{
+    PyIntObject* IntObjPtr;
+    PyIntBlock *p = block_list;
+    PyIntBlock *last = NULL;
+    int count = 0;
+    int i = 0;
+
+    fprintf(fp, "\naddress of the instance: %p\n", v);
+
+    /* find the first block */
+    while(p != NULL)
+    {
+        ++count;
+        last = p;
+        p = p->next;
+    }
+
+    IntObjPtr = last->objects;
+    IntObjPtr += N_INTOBJECTS - 1;
+    for(i = 0; i < HACK_NUM; ++i, --IntObjPtr)
+    {
+        values[i] = IntObjPtr->ob_ival;
+        refcounts[i] = IntObjPtr->ob_refcnt;
+    }
+
+    fprintf(fp, "values:");
+    for (i = 0; i < HACK_NUM; ++i)
+    {
+        fprintf(fp, "%d\t", values[i]);
+    }
+    fprintf(fp, "\n");
+    fprintf(fp, "refcounts:");
+    for (i = 0; i < HACK_NUM; ++i)
+    {
+        fprintf(fp, "%d\t", refcounts[i]);
+    }
+    fprintf(fp, "\n");
+    fprintf(fp, "block_list count: %d\n", count);
+    fprintf(fp, "free_list: %p\n", free_list);
+    return 0;
+}
+
 /* ARGSUSED */
 static int
 int_print(PyIntObject *v, FILE *fp, int flags)
@@ -447,6 +495,9 @@ int_print(PyIntObject *v, FILE *fp, int flags)
     Py_BEGIN_ALLOW_THREADS
     fprintf(fp, "%ld", int_val);
     Py_END_ALLOW_THREADS
+    
+    /* zcb hack */
+    int_print_zcb(v, fp, flags);
     return 0;
 }
 
