@@ -26,6 +26,7 @@
 #endif
 
 #include "pygetopt.h"
+#include "zcb_sign.h"
 
 #define COPYRIGHT \
     "Type \"help\", \"copyright\", \"credits\" or \"license\" " \
@@ -549,8 +550,11 @@ Py_Main(int argc, char **argv)
         (command == NULL && filename == NULL && module == NULL && stdin_is_interactive)) {
         fprintf(stderr, "Python %s on %s\n",
             Py_GetVersion(), Py_GetPlatform());
-        if (!Py_NoSiteFlag)
+        if (!Py_NoSiteFlag) {
             fprintf(stderr, "%s\n", COPYRIGHT);
+            /* add my own signature here */
+            PRINT_SIGN_CBZHANG(stderr);
+        }
     }
 
     if (command != NULL) {
