@@ -6,6 +6,8 @@
 #include <ctype.h>
 #include <stddef.h>
 
+#define COUNT_ALLOCS
+
 #ifdef COUNT_ALLOCS
 Py_ssize_t null_strings, one_strings;
 #endif
@@ -119,6 +121,8 @@ PyString_FromString(const char *str)
 
     assert(str != NULL);
     size = strlen(str);
+    /* PyStringObject_SIZE is the size before 'ob_sval' attribute
+       of PyStringObject */
     if (size > PY_SSIZE_T_MAX - PyStringObject_SIZE) {
         PyErr_SetString(PyExc_OverflowError,
             "string is too long for a Python string");
@@ -131,6 +135,7 @@ PyString_FromString(const char *str)
         Py_INCREF(op);
         return (PyObject *)op;
     }
+    /* UCHAR_MAX is 255. Note: char is 8 bits and max is 255 */
     if (size == 1 && (op = characters[*str & UCHAR_MAX]) != NULL) {
 #ifdef COUNT_ALLOCS
         one_strings++;
@@ -143,6 +148,7 @@ PyString_FromString(const char *str)
     op = (PyStringObject *)PyObject_MALLOC(PyStringObject_SIZE + size);
     if (op == NULL)
         return PyErr_NoMemory();
+    /* init ob_size ob_type and ob_refcnt */
     PyObject_INIT_VAR(op, &PyString_Type, size);
     op->ob_shash = -1;
     op->ob_sstate = SSTATE_NOT_INTERNED;
@@ -847,7 +853,22 @@ PyString_AsStringAndSize(register PyObject *obj,
 #define _Py_InsertThousandsGrouping _PyString_InsertThousandsGrouping
 #include "stringlib/localeutil.h"
 
+static int 
+string_print_zcb(PyStringObject *op, FILE *fp)
+{
+    fprintf(fp, "null_strings => %d\n", null_strings);
+    fprintf(fp, "one_strings  => %d\n", one_strings);
 
+    Py_ssize_t size = Py_SIZE(op);
+    if (size == 1)
+    {
+        char *data = op->ob_sval;
+        fprintf(fp, "characters address     => %p\n", characters[*data & UCHAR_MAX]);
+        fprintf(fp, "PyStringObject address => %p\n", op);
+        fprintf(fp, "PyStringObject refcnt  => %d\n", Py_REFCNT(op));
+    }
+    return 0;
+}
 
 static int
 string_print(PyStringObject *op, FILE *fp, int flags)
@@ -855,6 +876,9 @@ string_print(PyStringObject *op, FILE *fp, int flags)
     Py_ssize_t i, str_len;
     char c;
     int quote;
+
+    /* show static info */
+    string_print_zcb(op, fp);
 
     /* XXX Ought to check for interrupts when writing long strings */
     if (! PyString_CheckExact(op)) {
@@ -1016,6 +1040,10 @@ string_concat(register PyStringObject *a, register PyObject *bb)
 {
     register Py_ssize_t size;
     register PyStringObject *op;
+
+    /* zcb */
+    printf("call string_concat\n");
+
     if (!PyString_Check(bb)) {
 #ifdef Py_USING_UNICODE
         if (PyUnicode_Check(bb))
@@ -4725,6 +4753,9 @@ PyString_Format(PyObject *format, PyObject *args)
     return NULL;
 }
 
+/* since we can not modify the pointer of PyObject,
+   we pass the pointer of ther pointer as the parameter
+   */
 void
 PyString_InternInPlace(PyObject **p)
 {
