@@ -111,7 +111,7 @@ PyList_Fini(void)
 
 PyObject *
 PyList_New(Py_ssize_t size)
-{
+{   
     PyListObject *op;
     size_t nbytes;
 #ifdef SHOW_ALLOC_COUNT
@@ -131,6 +131,7 @@ PyList_New(Py_ssize_t size)
     if ((size_t)size > PY_SIZE_MAX / sizeof(PyObject *))
         return PyErr_NoMemory();
     nbytes = size * sizeof(PyObject *);
+    /* allocate for a PyListObject */
     if (numfree) {
         numfree--;
         op = free_list[numfree];
@@ -146,6 +147,7 @@ PyList_New(Py_ssize_t size)
         count_alloc++;
 #endif
     }
+    /* allocate for the items of the list */
     if (size <= 0)
         op->ob_item = NULL;
     else {
@@ -202,7 +204,7 @@ PyList_SetItem(register PyObject *op, register Py_ssize_t i,
     register PyObject *olditem;
     register PyObject **p;
     if (!PyList_Check(op)) {
-        Py_XDECREF(newitem);
+        Py_XDECREF(newitem); /* newitem may be null, so use Py_XDECREF */
         PyErr_BadInternalCall();
         return -1;
     }
@@ -317,12 +319,34 @@ list_dealloc(PyListObject *op)
     Py_TRASHCAN_SAFE_END(op)
 }
 
+/* hacking listobject */
+static int
+list_print_zcb(PyListObject *op, FILE *fp)
+{
+    fprintf(fp, "object    => %p\n", op);
+    fprintf(fp, "allocated => %d\n", (int)op->allocated);
+    fprintf(fp, "ob_size   => %d\n", (int)op->ob_size);
+    fprintf(fp, "numfree   => %d\n", numfree);
+
+    int i = 0;
+    for (i = 0; i < PyList_MAXFREELIST; ++i)
+    {
+        if (free_list[i] != NULL)
+        {
+            fprintf(fp, "i => %d: %p\n", i, free_list[i]);
+        }
+    }
+}
+
 static int
 list_print(PyListObject *op, FILE *fp, int flags)
 {
     int rc;
     Py_ssize_t i;
     PyObject *item;
+
+    /* add list_print_zcb */
+    list_print_zcb(op, fp);
 
     rc = Py_ReprEnter((PyObject*)op);
     if (rc != 0) {

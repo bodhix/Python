@@ -877,8 +877,8 @@ string_print(PyStringObject *op, FILE *fp, int flags)
     char c;
     int quote;
 
-    /* show static info */
-    string_print_zcb(op, fp);
+    /* hacking stringobject */
+    // string_print_zcb(op, fp);
 
     /* XXX Ought to check for interrupts when writing long strings */
     if (! PyString_CheckExact(op)) {
@@ -1040,10 +1040,6 @@ string_concat(register PyStringObject *a, register PyObject *bb)
 {
     register Py_ssize_t size;
     register PyStringObject *op;
-
-    /* zcb */
-    printf("call string_concat\n");
-
     if (!PyString_Check(bb)) {
 #ifdef Py_USING_UNICODE
         if (PyUnicode_Check(bb))

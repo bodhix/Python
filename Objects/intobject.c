@@ -497,7 +497,7 @@ int_print(PyIntObject *v, FILE *fp, int flags)
     Py_END_ALLOW_THREADS
     
     /* zcb hack */
-    int_print_zcb(v, fp, flags);
+    // int_print_zcb(v, fp, flags);
     return 0;
 }
 
