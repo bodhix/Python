@@ -33,6 +33,8 @@ PATH: /usr/sbin
 PATH: /usr/bin
 PATH: /sbin
 PATH: /bin
+PATH: /usr/games
+PATH: /usr/local/games
 
 
 ## ----------- ##
@@ -473,7 +475,7 @@ configure: failed program was:
 configure:6289: result: no
 configure:6302: checking whether pthreads are available without options
 configure:6327: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/ccjpaoQF.o: In function `main':
+/tmp/cclzi5o3.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:34: undefined reference to `pthread_create'
 /home/cbzhang/Sourcecode/Python/conftest.c:36: undefined reference to `pthread_detach'
 collect2: error: ld returned 1 exit status
@@ -5629,7 +5631,7 @@ configure: failed program was:
 configure:8531: result: no
 configure:8545: checking for library containing sem_init
 configure:8576: gcc -o conftest -g -O2   conftest.c -ldl  >&5
-/tmp/ccFV0uPH.o: In function `main':
+/tmp/ccQMxcyj.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:111: undefined reference to `sem_init'
 collect2: error: ld returned 1 exit status
 configure:8576: $? = 1
@@ -5874,7 +5876,7 @@ configure: failed program was:
 configure:8640: result: no
 configure:8687: checking for t_open in -lnsl
 configure:8712: gcc -o conftest -g -O2   conftest.c -lnsl  -lpthread -ldl  >&5
-/tmp/ccR0qv1l.o: In function `main':
+/tmp/ccLvstpv.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:111: undefined reference to `t_open'
 collect2: error: ld returned 1 exit status
 configure:8712: $? = 1
@@ -6429,7 +6431,7 @@ configure:10180: $? = 0
 configure:10180: result: yes
 configure:10180: checking for getwd
 configure:10180: gcc -pthread -o conftest -g -O2   conftest.c -lpthread -ldl  >&5
-/tmp/ccrd2cZV.o: In function `main':
+/tmp/ccFBOlVw.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:172: warning: the `getwd' function is dangerous and should not be used.
 configure:10180: $? = 0
 configure:10180: result: yes
@@ -6673,7 +6675,7 @@ configure:10180: $? = 0
 configure:10180: result: yes
 configure:10180: checking for plock
 configure:10180: gcc -pthread -o conftest -g -O2   conftest.c -lpthread -ldl  >&5
-/tmp/ccafsC3P.o: In function `main':
+/tmp/ccZcqcKc.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:185: undefined reference to `plock'
 collect2: error: ld returned 1 exit status
 configure:10180: $? = 1
@@ -6873,7 +6875,7 @@ configure:10180: $? = 0
 configure:10180: result: yes
 configure:10180: checking for pthread_init
 configure:10180: gcc -pthread -o conftest -g -O2   conftest.c -lpthread -ldl  >&5
-/tmp/ccv59gsb.o: In function `main':
+/tmp/ccLWDo8t.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:186: undefined reference to `pthread_init'
 collect2: error: ld returned 1 exit status
 configure:10180: $? = 1
@@ -7210,7 +7212,7 @@ configure:10180: $? = 0
 configure:10180: result: yes
 configure:10180: checking for tempnam
 configure:10180: gcc -pthread -o conftest -g -O2   conftest.c -lpthread -ldl  >&5
-/tmp/cc6KpDEX.o: In function `main':
+/tmp/cc24fXxx.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:224: warning: the use of `tempnam' is dangerous, better use `mkstemp'
 configure:10180: $? = 0
 configure:10180: result: yes
@@ -7228,13 +7230,13 @@ configure:10180: $? = 0
 configure:10180: result: yes
 configure:10180: checking for tmpnam
 configure:10180: gcc -pthread -o conftest -g -O2   conftest.c -lpthread -ldl  >&5
-/tmp/ccC6mJUB.o: In function `main':
+/tmp/ccPwllz6.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:228: warning: the use of `tmpnam' is dangerous, better use `mkstemp'
 configure:10180: $? = 0
 configure:10180: result: yes
 configure:10180: checking for tmpnam_r
 configure:10180: gcc -pthread -o conftest -g -O2   conftest.c -lpthread -ldl  >&5
-/tmp/cc6ZnAsE.o: In function `main':
+/tmp/ccYU1H8f.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:229: warning: the use of `tmpnam_r' is dangerous, better use `mkstemp'
 configure:10180: $? = 0
 configure:10180: result: yes
@@ -7272,7 +7274,7 @@ configure:10180: $? = 0
 configure:10180: result: yes
 configure:10180: checking for _getpty
 configure:10180: gcc -pthread -o conftest -g -O2   conftest.c -lpthread -ldl  >&5
-/tmp/ccdmsbsJ.o: In function `main':
+/tmp/ccNsEhkq.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:238: undefined reference to `_getpty'
 collect2: error: ld returned 1 exit status
 configure:10180: $? = 1
@@ -8032,7 +8034,7 @@ configure:10643: $? = 0
 configure:10652: result: yes
 configure:10708: checking for chflags
 configure:10729: gcc -pthread -o conftest -g -O2   conftest.c -lpthread -ldl  >&5
-/tmp/cc1kL6O6.o: In function `main':
+/tmp/ccETOHkD.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:218: warning: chflags is not implemented and will always fail
 configure:10729: $? = 0
 configure:10729: ./conftest
@@ -8264,7 +8266,7 @@ configure: failed program was:
 configure:10740: result: no
 configure:10757: checking for lchflags
 configure:10778: gcc -pthread -o conftest -g -O2   conftest.c -lpthread -ldl  >&5
-/tmp/ccIphNue.o: In function `main':
+/tmp/ccLLWRCJ.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:218: undefined reference to `lchflags'
 collect2: error: ld returned 1 exit status
 configure:10778: $? = 1
@@ -8745,7 +8747,7 @@ configure:10976: $? = 0
 configure:10980: result: yes
 configure:10993: checking for openpty
 configure:10993: gcc -pthread -o conftest -g -O2   conftest.c -lpthread -ldl  >&5
-/tmp/ccQ5UcE4.o: In function `main':
+/tmp/ccEJVYXz.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:251: undefined reference to `openpty'
 collect2: error: ld returned 1 exit status
 configure:10993: $? = 1
@@ -9022,7 +9024,7 @@ configure:11189: $? = 0
 configure:11189: result: yes
 configure:11203: checking for fseek64
 configure:11203: gcc -pthread -o conftest -g -O2   conftest.c -lpthread -ldl  -lutil >&5
-/tmp/ccppoVJL.o: In function `main':
+/tmp/ccbcpfMT.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:254: undefined reference to `fseek64'
 collect2: error: ld returned 1 exit status
 configure:11203: $? = 1
@@ -9295,7 +9297,7 @@ configure:11203: $? = 0
 configure:11203: result: yes
 configure:11203: checking for ftell64
 configure:11203: gcc -pthread -o conftest -g -O2   conftest.c -lpthread -ldl  -lutil >&5
-/tmp/ccMgeM7a.o: In function `main':
+/tmp/ccqxCMAm.o: In function `main':
 /home/cbzhang/Sourcecode/Python/conftest.c:256: undefined reference to `ftell64'
 collect2: error: ld returned 1 exit status
 configure:11203: $? = 1
@@ -20306,6 +20308,7 @@ config.status:1168: creating Modules/Setup.config
 config.status:1168: creating Misc/python.pc
 config.status:1168: creating Modules/ld_so_aix
 config.status:1168: creating pyconfig.h
+config.status:1349: pyconfig.h is unchanged
 
 ## ---------------- ##
 ## Cache variables. ##
@@ -21084,3 +21087,20 @@ target_alias=''
 #define PY_FORMAT_SIZE_T "z"
 
 configure: exit 0
+
+## ---------------------- ##
+## Running config.status. ##
+## ---------------------- ##
+
+This file was extended by python config.status 2.7, which was
+generated by GNU Autoconf 2.69.  Invocation command line was
+
+  CONFIG_FILES    = Makefile.pre
+  CONFIG_HEADERS  = 
+  CONFIG_LINKS    = 
+  CONFIG_COMMANDS = 
+  $ config.status 
+
+on cbzhang
+
+config.status:: creating Makefile.pre

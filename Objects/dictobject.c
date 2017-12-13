@@ -328,6 +328,7 @@ lookdict(PyDictObject *mp, PyObject *key, register long hash)
     register int cmp;
     PyObject *startkey;
 
+    /* eg. hash of a intobject is its value(object->ob_ival) */
     i = (size_t)hash & mask;
     ep = &ep0[i];
     if (ep->me_key == NULL || ep->me_key == key)
@@ -502,6 +503,93 @@ _PyDict_MaybeUntrack(PyObject *op)
     _PyObject_GC_UNTRACK(op);
 }
 
+/* hacking dickobject -> show dict info */
+static int
+dictobj_info_zcb(PyDictObject *mp)
+{
+    printf(" === show dictobject info: ===\n");
+    printf("ma_used => %d\n", (int)mp->ma_used);
+    printf("ma_fill => %d\n", (int)mp->ma_fill);
+    printf("ma_mask => %d\n", (int)mp->ma_mask);
+
+    printf("ma_table => %p\n", mp->ma_table);
+    printf("ma_smalltable => %p\n", mp->ma_smalltable);
+    return 0;
+}
+
+static int
+dict_info_zcb(PyDictObject *mp)
+{
+    /* show dictobj info */
+    dictobj_info_zcb(mp);
+
+    PyDictEntry *entry = mp->ma_table;
+    int count = mp->ma_mask + 1;
+    int i = 0;
+
+    /* show dictentry info */
+    printf("keys:\t");
+    for (i = 0; i < count; ++i)
+    {
+        PyObject* key   = entry->me_key;
+        if (key == NULL)
+        {
+            printf("NULL");
+        }
+        else
+        {
+            (key->ob_type)->tp_print(key, stdout, 0);
+        }
+        printf("\t");
+        ++entry;
+    }
+
+    printf("\nvalues:\t");
+    entry = mp->ma_table;
+    for (i = 0; i < count; ++i)
+    {
+        PyObject* value = entry->me_value;
+        if (value == NULL)
+        {
+            printf("NULL");
+        }
+        else
+        {
+            (value->ob_type)->tp_print(value, stdout, 0);
+        }
+        printf("\t");
+        ++entry;
+    }
+    printf("\n");
+    return 0;
+}
+
+/* since insertdict is called so frequently
+   we filter the dict info 
+   return 0 means the dictobj meets the filter condition
+         -1 means something wrong
+          1 means didnot meets the condition
+   */
+static int
+dict_info_filter_zcb(PyDictObject *mp)
+{
+    PyObject *filter_key = PyString_FromString("ZCB");
+    long filter_hash = PyObject_Hash(filter_key);
+    PyDictEntry *ep = mp->ma_lookup(mp, filter_key, filter_hash);
+    if (ep == NULL)
+    {
+        printf("ma_lookup return null, something wrong\n");
+        return -1;
+    }
+    else if (ep->me_value == NULL)
+    {
+        /* too frequently, comment it */
+        // printf("can not find key ZCB\n");
+        return 1;
+    }
+    return 0;
+}
+
 /*
 Internal routine to insert a new item into the table when you have entry object.
 Used by insertdict.
@@ -531,6 +619,14 @@ insertdict_by_entry(register PyDictObject *mp, PyObject *key, long hash,
         ep->me_value = value;
         mp->ma_used++;
     }
+
+    /* hacking dictobject */
+    int filter_res = dict_info_filter_zcb(mp);
+    if (!filter_res)
+    {
+        dict_info_zcb(mp);
+    }
+
     return 0;
 }
 

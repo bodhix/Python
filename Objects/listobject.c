@@ -346,7 +346,7 @@ list_print(PyListObject *op, FILE *fp, int flags)
     PyObject *item;
 
     /* add list_print_zcb */
-    list_print_zcb(op, fp);
+    // list_print_zcb(op, fp);
 
     rc = Py_ReprEnter((PyObject*)op);
     if (rc != 0) {
