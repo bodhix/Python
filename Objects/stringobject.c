@@ -856,8 +856,8 @@ PyString_AsStringAndSize(register PyObject *obj,
 static int 
 string_print_zcb(PyStringObject *op, FILE *fp)
 {
-    fprintf(fp, "null_strings => %d\n", null_strings);
-    fprintf(fp, "one_strings  => %d\n", one_strings);
+    fprintf(fp, "null_strings => %d\n", (int)null_strings);
+    fprintf(fp, "one_strings  => %d\n", (int)one_strings);
 
     Py_ssize_t size = Py_SIZE(op);
     if (size == 1)
@@ -865,9 +865,71 @@ string_print_zcb(PyStringObject *op, FILE *fp)
         char *data = op->ob_sval;
         fprintf(fp, "characters address     => %p\n", characters[*data & UCHAR_MAX]);
         fprintf(fp, "PyStringObject address => %p\n", op);
-        fprintf(fp, "PyStringObject refcnt  => %d\n", Py_REFCNT(op));
+        fprintf(fp, "PyStringObject refcnt  => %d\n", (int)Py_REFCNT(op));
     }
     return 0;
+}
+
+static int
+string_print_zcb_filter(PyStringObject *op)
+{
+    char* sval = PyString_AsString((PyObject*)op);
+    if (strncmp(sval, "ZCB", strlen("ZCB")) == 0) {
+        return 1;
+    }
+    return 0;
+}
+
+/* print the static value interned */
+static void
+string_print_interned_zcb(PyStringObject *op, FILE *fp)
+{
+    PyObject *keys, *k, *v;
+    int i;
+
+    /* since it is called so frequently
+        we filter to call it
+    */
+    if (!string_print_zcb_filter(op)) {
+        return;
+    }
+
+    if (interned == NULL || !PyDict_Check(interned)) {
+        fprintf(fp, "interned is NULL or not a dictobject\n");
+        return;
+    }
+
+    fprintf(fp, "Print interned\n");
+    // PyObject_Print(interned, fp, Py_PRINT_RAW);
+
+    keys = PyDict_Keys(interned);
+    if (keys == NULL || !PyList_Check(keys)) {
+        fprintf(fp, "keys of interned is NULL or not a listobject\n");
+        PyErr_Clear();
+        return;
+    }
+
+    fprintf(fp, "Print keys of interned\n");
+    // PyObject_Print(keys, fp, Py_PRINT_RAW);
+
+    int size = PyList_GET_SIZE(keys);
+    for (i = 0; i < size; ++i) {
+        k = PyList_GET_ITEM(keys, i);
+        v = PyDict_GetItem(interned, k);
+        fprintf(fp, "Got key %d: addr %p, value addr %p\n", i, k, v);
+        // PyObject_Print(k, fp, Py_PRINT_RAW);
+        // PyObject_Print(v, fp, Py_PRINT_RAW);
+    }
+}
+
+static void
+string_print_info_zcb(PyStringObject *op, FILE *fp)
+{
+    if (!string_print_zcb_filter(op)) {
+        return;
+    }
+
+    fprintf(fp, "Got string, addr is: %p, refcnt is: %d\n", op, (int)Py_REFCNT((PyObject*)op));
 }
 
 static int
@@ -878,7 +940,7 @@ string_print(PyStringObject *op, FILE *fp, int flags)
     int quote;
 
     /* hacking stringobject */
-    // string_print_zcb(op, fp);
+    string_print_info_zcb(op, fp);
 
     /* XXX Ought to check for interrupts when writing long strings */
     if (! PyString_CheckExact(op)) {
