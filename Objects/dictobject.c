@@ -517,9 +517,45 @@ dictobj_info_zcb(PyDictObject *mp)
     return 0;
 }
 
+/* since insertdict is called so frequently
+   we filter the dict info 
+   return 0 means the dictobj meets the filter condition
+         -1 means something wrong
+          1 means didnot meets the condition
+   */
+static int
+dict_info_filter_zcb(PyDictObject *mp)
+{
+    PyObject *filter_key = PyString_FromString("ZCBDICT");
+    long filter_hash = PyObject_Hash(filter_key);
+    PyDictEntry *ep = mp->ma_lookup(mp, filter_key, filter_hash);
+    if (ep == NULL)
+    {
+        printf("ma_lookup return null, something wrong\n");
+        return -1;
+    }
+    else if (ep->me_value == NULL)
+    {
+        /* too frequently, comment it */
+        // printf("can not find key ZCB\n");
+        return 1;
+    }
+
+    /* skip the internal dict */
+    if (mp->ma_mask >= 50) {
+        return 1;
+    }
+
+    return 0;
+}
+
 static int
 dict_info_zcb(PyDictObject *mp)
 {
+    if (dict_info_filter_zcb(mp)) {
+        return 0;
+    }
+
     /* show dictobj info */
     dictobj_info_zcb(mp);
 
@@ -564,32 +600,6 @@ dict_info_zcb(PyDictObject *mp)
     return 0;
 }
 
-/* since insertdict is called so frequently
-   we filter the dict info 
-   return 0 means the dictobj meets the filter condition
-         -1 means something wrong
-          1 means didnot meets the condition
-   */
-static int
-dict_info_filter_zcb(PyDictObject *mp)
-{
-    PyObject *filter_key = PyString_FromString("ZCB");
-    long filter_hash = PyObject_Hash(filter_key);
-    PyDictEntry *ep = mp->ma_lookup(mp, filter_key, filter_hash);
-    if (ep == NULL)
-    {
-        printf("ma_lookup return null, something wrong\n");
-        return -1;
-    }
-    else if (ep->me_value == NULL)
-    {
-        /* too frequently, comment it */
-        // printf("can not find key ZCB\n");
-        return 1;
-    }
-    return 0;
-}
-
 /*
 Internal routine to insert a new item into the table when you have entry object.
 Used by insertdict.
@@ -621,11 +631,7 @@ insertdict_by_entry(register PyDictObject *mp, PyObject *key, long hash,
     }
 
     /* hacking dictobject */
-    int filter_res = dict_info_filter_zcb(mp);
-    if (!filter_res)
-    {
-        dict_info_zcb(mp);
-    }
+    dict_info_zcb(mp);
 
     return 0;
 }
